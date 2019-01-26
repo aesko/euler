@@ -673,8 +673,50 @@ length(x) # solution 29
 ```
 
 
+### Problem 30
+```{r}
+suppressMessages(library(tidyverse))
+split_int <- function(x) {
+  as.numeric(strsplit(as.character(x), "")[[1]])
+}
+power_sum <- function(x, pow) {
+  sum(x^pow)
+}
+
+x <- 1:1000000 %>% 
+  map_lgl(~ .x %>% split_int() %>% power_sum(5) == .x)
+x[1] <- F # the powers of one are not a sum and are hence ignored
+
+which(x) # elemeents for which the sum of fifth power digits equals the element
+sum(which(x)) # solution 30
+```
 
 
+### Problem 31
+```{r}
+coins <- c(200,100,50,20,10,5,2,1)
+
+
+perms <- function(target, a, b) {
+  x <- max(a,b); y <- min(a,b)
+  smallest_jump <- if(x %% y == 0) x else {
+    jump <- x
+    while(jump %% y != 0) jump <- jump + x
+    jump
+  }
+  
+  output <- 1
+  x_sum <- target
+  while (x_sum - smallest_jump >= 0) {
+    x_sum <- x_sum - smallest_jump
+    output <- output + 1
+  }
+  output
+}
+
+perms(150, 5, 2)
+
+```
 
 
 
