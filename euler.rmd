@@ -659,6 +659,25 @@ diagonal_sum
 ```
 
 
+### Problem 29
+```{r}
+suppressMessages(library(tidyverse))
+options(scipen = 999)
+
+x <- 2:100 %>% 
+    map(~ map(2:100, function(a,b) a^b, b = .x)) %>%  # generate 99 lists of length 99 (all combinations of the powers)
+    map(~reduce(.x, union)) %>% # reduce each list to the union of values in said list (each list becomes a numeric vector)
+    reduce(union) # union of all values
+
+length(x) # solution 29
+```
+
+
+
+
+
+
+
 ### Problem  67
 ```{r}
 data <- read.delim("problem 67.txt", header = F, sep = " ", col.names = as.character(1:100))
