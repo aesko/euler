@@ -692,7 +692,7 @@ sum(which(x)) # solution 30
 ```
 
 
-### Problem 31
+### Problem 31 - incomplete!!
 ```{r}
 coins <- c(200,100,50,20,10,5,2,1)
 
@@ -715,6 +715,25 @@ perms <- function(target, a, b) {
 }
 
 perms(150, 5, 2)
+```
+
+
+### Problem 32
+```{r}
+suppressMessages(library(tidyverse))
+# function to determine combined digit count of multiplier, multiplicand and product
+prod_length <- function(a, b) {
+    c <- a*b
+    as.character(c(a,b,c)) %>% nchar() %>% sum()
+}
+
+# function to check whether an integer contains the desired digits once
+contains_once <- function(x, digits) {
+    # divide x into digits
+    x_digits <- as.numeric(strsplit(as.character(x), "")[[1]])
+    # check for equal number of digits and all digits being present in x
+    length(x_digits) == length(digits) & all(x_digits %in% digits)
+}
 
 ```
 
