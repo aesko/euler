@@ -446,17 +446,24 @@ summatrix[1,1] ## solution 18
 ### Problem  19
 ```{r}
 suppressMessages(library(lubridate))
+start <- ymd('1901-01-01')
+end<- ymd('2000-12-31')
 
-x <- ymd('1900-01-06') # the first Sunday of the 20th century
+# find the first Sunday
+while (day(start) != 1) {
+  start <- start + 1
+}
+
+x <- start
 sum <- 0
-while (x <= ymd('2000-12-31')) {
+while (x <= end) {
     if (day(x) == 1) {
         sum <- sum + 1
     }
     x <- x + 7
 }
 
-sum # solution 19 (this uses the real calendar, so the answer might be different if one used the calendar described in the assingment)
+sum # solution 19 
 ```
 
 
