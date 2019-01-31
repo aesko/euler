@@ -745,6 +745,21 @@ contains_once <- function(x, digits) {
 ```
 
 
+### Problem 34
+```{r}
+library(tidyverse)
+y <- lapply(0:9, factorial)
+sum_fac_dig <- function(x, y) {
+  x <- as.numeric(strsplit(as.character(x),"")[[1]])
+  x %>% map_dbl(~ y[[.+1]]) %>% sum()
+}
+
+x <- 1:3000000 %>% 
+  map_lgl(~ sum_fac_dig(.x, y=y) == .x)
+x[1:2] <- FALSE # exclude non-sums
+sum(which(x)) # Solution 32
+```
+
 
 ### Problem  67
 ```{r}
