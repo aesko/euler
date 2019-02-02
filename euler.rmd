@@ -8,26 +8,28 @@ Solutions to problems from [Project Euler](https://projecteuler.net).
 
 ### Problem  1
 ```{r}
-a <- 1:999
-multi <- which(a %% 3 == 0 | a %% 5 == 0)
-sum(a[multi]) # solution 1
+suppressMessages(library(tidyverse))
+1:999 %>% 
+  map_dbl(~ (. %% 3 == 0 | . %% 5 == 0) * .) %>% 
+  sum() # solution 1
 ```
 
 
 ### Problem  2
 ```{r}
-
-x <- c(1,2)
-i <- 3
-while ((x[i-1] + x[i-2]) <= 4000000) {
-  x[i] <- x[i-1] + x[i-2]
-  i <- i+1
+sum_even_fibonacci <- function(upper_lim) {
+  x <- c(1,2)
+  out <- 2
+  while(sum(x) <= upper_lim) {
+    x <- c(x[2], sum(x))
+    if(sum(x) %% 2 == 0) out <- out + sum(x)
+  }
+  out
 }
-
-even <- x[which(x %% 2 == 0)]
-even
-sum(even) # solution 2
+sum_even_fibonacci(4000000) # solution 2
 ```
+
+
 
 
 ### Problem  3
@@ -50,6 +52,33 @@ is.prime(num/small) # TRUE -> got lucky here
 
 num/small # solution 3 
 ```
+
+
+```{r}
+suppressMessages(library(tidyverse))
+# function to test for prime numbers (https://stackoverflow.com/a/19767707)
+is.prime <- function(n) n == 2L || all(n %% 2L:max(2,floor(sqrt(n))) != 0)
+
+num <- 600851475143
+i <- 3
+
+greatest_prime_factor <- function(x) {
+  if(num %% x == 0){
+    if(is.prime(num/x)){return(num/x)
+      } else greatest_prime_factor(x+2)
+  } else greatest_prime_factor(x+2)
+}
+greatest_prime_factor(3)
+
+
+
+div <- 2:100000 %>% map_lgl(~ num %% . == 0) %>% which() +1 %>% as.integer()
+x <- num/div %>% map_lgl(is.prime)
+
+
+
+```
+
 
 
 ### Problem  4
@@ -759,6 +788,9 @@ x <- 1:3000000 %>%
 x[1:2] <- FALSE # exclude non-sums
 sum(which(x)) # Solution 32
 ```
+
+
+
 
 
 ### Problem  67
