@@ -407,10 +407,6 @@ choose(40, 20)
 # which is equivalent to
 prod(40:21) / (factorial(20))
 ```
-```{r}
-factorial(5)
-prod(1:5)
-```
 
 
 ### Problem  16
