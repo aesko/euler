@@ -30,55 +30,25 @@ sum_even_fibonacci(4000000) # solution 2
 ```
 
 
-
-
 ### Problem  3
 ```{r}
-# WRONG ANSWER (the small number found is actually not a factor of the large number)
-
-num <- 600851475143
-# which small integers is the number of interest divisible by
-x <- 2:500
-divisible <- num %% x == 0
-# the smallest divisible number will lead us to the greatest factor (num/small)
-small <- min(which(divisible == T))
-
-
-# function to test for prime numbers (https://stackoverflow.com/a/19767707)
-is.prime <- function(n) n == 2L || all(n %% 2L:max(2,floor(sqrt(n))) != 0)
-
-# let's test if the big number is prime
-is.prime(num/small) # TRUE -> got lucky here
-
-num/small # solution 3 
-```
-
-
-```{r}
-suppressMessages(library(tidyverse))
-# function to test for prime numbers (https://stackoverflow.com/a/19767707)
-is.prime <- function(n) n == 2L || all(n %% 2L:max(2,floor(sqrt(n))) != 0)
-
-num <- 600851475143
-i <- 3
-
-greatest_prime_factor <- function(x) {
-  if(num %% x == 0){
-    if(is.prime(num/x)){return(num/x)
-      } else greatest_prime_factor(x+2)
-  } else greatest_prime_factor(x+2)
+max_div <- function(a) {
+    b <- 2
+    c <- 0
+    while(a != b){
+        if(a %% b == 0){
+            if(b > c) c <- b
+            a <- a/b
+            b <- 2
+            print(c(a, c)) # this prints out intermediate factors
+        } else {
+            b <- b + 1
+        }
+    }
+    a
 }
-greatest_prime_factor(3)
-
-
-
-div <- 2:100000 %>% map_lgl(~ num %% . == 0) %>% which() +1 %>% as.integer()
-x <- num/div %>% map_lgl(is.prime)
-
-
-
+max_div(600851475143) # solution 3
 ```
-
 
 
 ### Problem  4
