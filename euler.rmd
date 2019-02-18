@@ -226,7 +226,7 @@ factor_count <- function(x) {
   length(div[x %% div == 0L])
 }
 
-i <- 11457
+i <- 1
 div <- 5
 largest <- 0
 while (div<=500) {
@@ -235,10 +235,11 @@ while (div<=500) {
   div <- factor_count(x)
   if(div > largest){largest <- div}
 }
+x # solution 12 (very slow)
 
-x <- 76576500
-factor_count(x)
-# solution 12
+# shortcut below: 
+# x <- 76576500 
+# factor_count(x)
 ```
 
 
@@ -365,7 +366,7 @@ collatz <- function(x) {
 
 x <- vector(mode="integer", length=1000000)
 x <- x+1 # corrects for the length of collatz sequences being 1 less than the correct number (e.g. the length of the first sequence is 1, not 0)
-for (i in 1:1000000) {
+for (i in 1:999999) {
     a <- i
     while(a>1){
         a <- collatz(a)
@@ -465,19 +466,12 @@ sum # solution 19
 ### Problem  20
 ```{r}
 options(scipen = 999)
-class(x)
-x <- as.character(factorial(100L))
-y <- as.character(factorial(100))
-z <- as.character(lfactorial(100))
-x <- as.character(prod(1:100))
+x <- factorial(100L)
 sum <- 0L
 for (i in 1:nchar(x)) {
     sum <- sum + as.integer(substr(x,i,i))
 }
 
-substr(x,nchar(x),nchar(x))
-nchar(x)
-tail(x)
 sum # solution 20
 ```
 
@@ -504,7 +498,6 @@ for (i in 2:x) {
     pairind[i] <- F # for cases when sum_of_div points to itself
   }
 }
-
 
 sum(sumdiv[pairind]) # solution 21
 ```
@@ -602,13 +595,26 @@ result
 
 ### Problem  26
 ```{r}
-# unsolved, somewhat uninteresting
 options(scipen=999)
-t <- 1000 %% (1:1000) == 0
-a <- (10000000000000000000000/(1:1000))[!t]
-a <- sprintf("%.20f", a) 
-a[1:3]
-which(t==F)
+
+
+precise_dev <- function(x) {
+    len <- nchar(as.character(as.integer(x)))
+    
+}
+
+
+x <- 1
+y <- 3
+quo <- numeric() # quotient
+
+upper[1] <- x %/% y
+16%/%5
+
+a <- 1:100
+b <- (1*10^20)/a
+
+b
 ```
 
 
@@ -620,7 +626,7 @@ is.prime <- function(n) if(n>1){n == 2L || all(n %% 2L:max(2,floor(sqrt(n))) != 
 # for counting consecutive prime numbers
 cqp <- function(a,b) {
     i <- 0
-    while (is.prime((i^2 + (a*i) + (b)))) {
+    while (is.prime((i^2 + a*i + b))) {
         i <- i+1
     }
     i
@@ -647,7 +653,7 @@ limit <- 1001*1001 # count of cells
 diagonal_sum <- 1 # keeps track of sum of diagonals
 i <- 1 # keep track of count of cells (as well as value)
 dist <- 2 # distance between diagonal cells
-count <- 0 # placeholder for how many value added with current "dist". after 4 counts, the distance needs to be increased by 2 and reset.
+count <- 0 # track how many values have been added with current "dist". after 4 counts increase dist by 2 and reset counter.
 while(i < limit){
     i <- i + dist
     diagonal_sum <- diagonal_sum + i
@@ -667,7 +673,7 @@ suppressMessages(library(tidyverse))
 options(scipen = 999)
 
 x <- 2:100 %>% 
-    map(~ map(2:100, function(a,b) a^b, b = .x)) %>%  # generate 99 lists of length 99 (all combinations of the powers)
+    map(~map(2:100, function(a,b) a^b, b = .x)) %>%  # generate 99 lists of length 99 (all combinations of the powers)
     map(~reduce(.x, union)) %>% # reduce each list to the union of values in said list (each list becomes a numeric vector)
     reduce(union) # union of all values
 
@@ -717,6 +723,65 @@ perms <- function(target, a, b) {
 }
 
 perms(150, 5, 2)
+```
+
+
+
+### Problem 31 v2
+```{r}
+library(tidyverse)
+coins <- c(1,2,5,10,20,50,100,200)
+
+
+fills <- function(target, big_coin, small_coin) {
+    sum((target - (1:(target %/% big_coin))*big_coin) %/% small_coin)
+}
+
+perms <- function(x, target) {
+    x <- x[order(x)]
+    # set initial count (if target divisible with first coin set to 1, otherwise set to 0)
+    if(target %% x[1] == 0) y <- 1 else y <- 0
+    
+    # iteration 1
+    y <- y + target %/% x[2]
+    
+    # iteration 2
+    # count possibilities for how many times coin 3 can replace coin 1, plus all the ways coin 2 can fill in the gaps below target not filled by coin 3 on each iteration
+    y <- y +
+        # ways in which coin 3 be used to replace coin 1 
+        target %/% x[3] +
+        # ways in which coin 2 can be used to fill in the gaps for each iteration of coin 3 replacing coin 1's
+        sum((target - (1:(target %/% x[3]))*x[3]) %/% x[2])
+    
+    
+    # iteration 3
+    # count possibilities for how many times coin 3 can replace coin 1, plus all the ways coin 2 can fill in the gaps below target not filled by coin 3 on each iteration
+    y <- y +
+        
+    
+    
+}
+
+
+sum((target - (1:(target %/% x[3]))*x[3]) %/% x[2])
+target - 1*x[3]
+(target - 40*x[3]) %/% x[2]
+
+190 %/% 2
+# temporary
+x <- coins
+target <- 200
+y
+
+
+t <- seq(0, 95, 5)
+tt <- seq(2, 97, 5)
+
+
+
+fills(200, 10, 5)
+fills(190, 5, 2)
+(target - (1:(target%/%10))*10) %>% map(~fills(., 5,2)) %>% reduce(sum)
 ```
 
 
