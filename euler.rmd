@@ -222,23 +222,23 @@ max(a[1],b[1],c[1],d[1]) # d is greatest
 ### Problem  12
 ```{r}
 factor_count <- function(x) {
-  div <- seq_len(x)
-  length(div[x %% div == 0L])
+  sum(x %% seq_len(x/2) == 0L) +1L
 }
 
-i <- 1
-div <- 5
+x <- 1L
+i <- 1L
+div <- 1
 largest <- 0
 while (div<=500) {
-  i <- i+1
-  x <- sum(1:i)
-  div <- factor_count(x)
-  if(div > largest){largest <- div}
+  i <- i+1L
+  x <- x+i
+  div <- ifelse(x %% 2L == 0L, factor_count(x), div)
+  if(div > largest) largest <- div
 }
-x # solution 12 (very slow)
+x # solution 12 (rather slow)
 
 # shortcut below: 
-# x <- 76576500 
+# x <- 76576500
 # factor_count(x)
 ```
 
@@ -732,10 +732,17 @@ perms(150, 5, 2)
 library(tidyverse)
 coins <- c(1,2,5,10,20,50,100,200)
 
-
+# calculate how many ways a bigger coin can substitute a smaller coin for a given value (i.e. target)
 fills <- function(target, big_coin, small_coin) {
     sum((target - (1:(target %/% big_coin))*big_coin) %/% small_coin)
 }
+
+# make a cumulative sequence for how a given coin can fill a given value (target), without 0 and with only the last cumulative value before the target
+coin_seq <- function(target, coin) {
+    seq(from = coin, length.out = (target - coin) %/% coin, by = coin)
+}
+
+
 
 perms <- function(x, target) {
     x <- x[order(x)]
@@ -751,27 +758,37 @@ perms <- function(x, target) {
         # ways in which coin 3 be used to replace coin 1 
         target %/% x[3] +
         # ways in which coin 2 can be used to fill in the gaps for each iteration of coin 3 replacing coin 1's
-        sum((target - (1:(target %/% x[3]))*x[3]) %/% x[2])
-    
+        sum(coin_seq(200, x[3]) %/% x[2])
     
     # iteration 3
-    # count possibilities for how many times coin 3 can replace coin 1, plus all the ways coin 2 can fill in the gaps below target not filled by coin 3 on each iteration
     y <- y +
-        
-    
-    
+        # count iterations for replacing coin 1 with coin 4
+        target %/% x[4] +
+        # ways in which coin 2 can replace gaps from coin 4
+        sum(coin_seq(200, x[4]) %/% x[2]) +
+        # ways in which coin 3 can replace gaps from coin 4
+        sum(coin_seq(200, x[4]) %/% x[3]) +
+        # ways in which coin 2 can replace the gaps from coin 3
+        coin_seq(200, x[4]) %>% map(~sum(coin_seq(., x[3]) %/% x[2])) %>% reduce(sum)
 }
 
 
 sum((target - (1:(target %/% x[3]))*x[3]) %/% x[2])
+fills()
+
+seq(from = x[3], length.out = (target - x[3]) %/% x[3], by = x[3])
+
+
+
+
+
 target - 1*x[3]
 (target - 40*x[3]) %/% x[2]
 
-190 %/% 2
 # temporary
 x <- coins
 target <- 200
-y
+y <- 0
 
 
 t <- seq(0, 95, 5)
@@ -783,6 +800,7 @@ fills(200, 10, 5)
 fills(190, 5, 2)
 (target - (1:(target%/%10))*10) %>% map(~fills(., 5,2)) %>% reduce(sum)
 ```
+
 
 
 ### Problem 32
