@@ -412,15 +412,81 @@ prod(40:21) / (factorial(20))
 
 ### Problem  16
 ```{r}
+# 1st try: compute the power (will likely be inaccurate) and the calculate sum all digits
 options(scipen = 999)
 txt <- as.character(2^1000)
 x <- vector(mode='integer', length = nchar(txt))
-
 
 for(i in 1:length(x)){
   x[i] <- as.integer(substr(txt,i,i))
 }
 sum(x)
+# outcome: inaccurate
+
+# 2nd try: observe pattern for the digit sums for powers of two grow
+library(tidyverse)
+powers <- 2L:25L %>%
+    map_dbl(~2L^.x)
+# digit sum function from (https://stackoverflow.com/a/18675519) [benchmark winner, elegant concept]
+digitsum <- function(x) sum(floor(x / 10^(0:(nchar(x) - 1))) %% 10)
+dsums <- powers %>% map_dbl(digitsum)
+powers; dsums
+qplot(y=dsums)
+
+```
+
+
+### Problem 17
+```{r}
+library(tidyverse)
+
+# mapping table for words 0 to 9
+words_0t9 <- tibble(id = 0:9, word = as.character(c(
+    "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")))
+
+# mapping table for words 10 to 19
+words_10t19 <- tibble(id = 10:19, word = as.character(c(
+    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")))
+
+# mapping table for tens 20 to 90
+words_tens <- tibble(id = seq(20,90, by=10), word = as.character(c(
+    "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"
+)))
+
+# function to write numbers between 20 and 99
+write_2digit_number <- function(x) {
+    paste(
+    # first digit into writing
+    words_tens[[match(floor(x/10)*10, words_tens$id), 2]],
+    # second digit into writing 
+    words_0t9[[x %% 10 +1, 2]],
+    sep = "-"
+    )
+}
+
+# mapping table for numbers 20 to 99
+words_20t99 <- tibble(id = 20:99, word = map_chr(20:99, write_2digit_number))
+
+# table for words 0 to 99
+words_0t99 <- bind_rows(words_0t9, words_10t19, words_20t99)
+
+# mapping table for hundreds
+words_hundreds <- tibble(id = seq(100, 900, by = 100), word =
+    paste(words_0t9$word[2:10], "hundred", sep = " "))
+
+# table for words 100 to 999
+words_100t999 <- tibble(id = c(101:199, 201:299, 301:399, 401:499, 501:599, 601:699, 701:799, 801:899, 901:999),
+                        word = words_hundreds$word %>% map(~ paste(. , "and", words_0t99$word[2:100])) %>% reduce(c)) %>% 
+                 bind_rows(words_hundreds) %>% arrange(id)
+
+# complete table                
+words_all <- bind_rows(words_0t99, words_100t999) %>% 
+             bind_rows(tibble(id = 1000, word = "one thousand")) %>% 
+    mutate(word_clean = gsub(" ", "", word),
+           word_clean = gsub("-", "", word_clean),
+           letter_count = nchar(word_clean))
+
+sum(words_all$letter_count) # solution 17
 ```
 
 
