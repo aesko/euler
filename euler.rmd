@@ -364,6 +364,7 @@ digitsum <- function(x) sum(floor(x / 10^(0:(nchar(x) - 1))) %% 10)
 dsums <- powers %>% map_dbl(digitsum)
 powers; dsums
 qplot(y=dsums)
+# no precisely predictable pattern observable
 
 # 4th try: implement power of two as a function that is the sum of a number with itself
 big.add <- function(a, b) {
@@ -677,7 +678,7 @@ for (i in -999:999) {
     }
 }
 
-prod(winner[2:3])
+prod(winner[2:3]) # solution 27
 ```
 
 
@@ -697,7 +698,7 @@ while(i < limit){
         count <- 0
     }
 }
-diagonal_sum
+diagonal_sum # solution 28
 ```
 
 
@@ -718,6 +719,7 @@ length(x) # solution 29
 ### Problem 30
 ```{r}
 suppressMessages(library(tidyverse))
+# fun: split a number into a vector of its digits
 split_int <- function(x) {
   as.numeric(strsplit(as.character(x), "")[[1]])
 }
@@ -725,11 +727,21 @@ power_sum <- function(x, pow) {
   sum(x^pow)
 }
 
-x <- 1:1000000 %>% 
+# fun: find clumsy upper boundary for digit nth power sum
+upper_limit <- function(power) {
+  number <- 9
+  while(number <= split_int(number) %>% power_sum(power)){
+    number <- c(number,9) %>% paste0(collapse = "") %>% as.numeric()
+  }
+  number %>% split_int() %>% power_sum(power)
+}
+limit <- upper_limit(5) # highest number that will be tested
+
+x <- 1:limit %>% 
   map_lgl(~ .x %>% split_int() %>% power_sum(5) == .x)
 x[1] <- F # the powers of one are not a sum and are hence ignored
 
-which(x) # elemeents for which the sum of fifth power digits equals the element
+which(x) # elements for which the sum of fifth power digits equals the element
 sum(which(x)) # solution 30
 ```
 
@@ -842,18 +854,20 @@ fills(190, 5, 2)
 suppressMessages(library(tidyverse))
 # function to determine combined digit count of multiplier, multiplicand and product
 prod_length <- function(a, b) {
-    c <- a*b
-    as.character(c(a,b,c)) %>% nchar() %>% sum()
+    ab <- a*b
+    as.character(c(a,b,ab)) %>% nchar() %>% sum()
 }
 
 # function to check whether an integer contains the desired digits once
 contains_once <- function(x, digits) {
-    # divide x into digits
+    if(length(unique(digits)) != length(digits)){stop("provided digits contain duplicates")}
     x_digits <- as.numeric(strsplit(as.character(x), "")[[1]])
     # check for equal number of digits and all digits being present in x
     length(x_digits) == length(digits) & all(x_digits %in% digits)
 }
 
+digits <- seq(1,9)
+contains_once(213456789, digits)
 ```
 
 
@@ -869,7 +883,7 @@ sum_fac_dig <- function(x, y) {
 x <- 1:3000000 %>% 
   map_lgl(~ sum_fac_dig(.x, y=y) == .x)
 x[1:2] <- FALSE # exclude non-sums
-sum(which(x)) # Solution 32
+sum(which(x)) # Solution 34
 ```
 
 
