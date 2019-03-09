@@ -127,7 +127,6 @@ biggest_i <- 0
 for (i in 1:988) {
   score <- seq_mult(substr(txt, i, i+12))
   if(score > biggest) {biggest <- score; biggest_i <- i}
-  
 }
 
 prod <- seq_mult(substr(txt, biggest_i, biggest_i+12))
@@ -194,8 +193,7 @@ dat <- c(08, 02, 22, 97, 38, 15, 00, 40, 00, 75, 04, 05, 07, 78, 52, 12, 50, 77,
 20, 73, 35, 29, 78, 31, 90, 01, 74, 31, 49, 71, 48, 86, 81, 16, 23, 57, 05, 54, 
 01, 70, 54, 71, 83, 51, 54, 69, 16, 92, 33, 48, 61, 43, 52, 01, 89, 19, 67, 48)
 
-
-
+# function to calculate product of indeces based on an increment
 line_of_4 <- function(data, increment, limit = T) {
   largest <- 0
   largest_i <- 0
@@ -206,15 +204,16 @@ line_of_4 <- function(data, increment, limit = T) {
   c(largest, largest_i)
 }
 
+# calculate products for adjacent indeces in different directions
 a <- line_of_4(dat, 20) # down
 # passing a suitable limit as an argument restricts the search to adjacent numbers
 b <- line_of_4(dat, 1, limit= quote(i%%20 <=17)) # right
 c <- line_of_4(dat, 21, limit= quote(i%%20 <=17)) # diagonal south-east
 d <- line_of_4(dat, 19, limit= quote(i%%20 >=4)) # diagonal south-west
 
-max(a[1],b[1],c[1],d[1]) # d is greatest
 
-# solution 11
+# look up greatest product
+max(a[1],b[1],c[1],d[1]) # solution 11
 # diagonal right-to-left from pos 247 is the largest product
 ```
 
