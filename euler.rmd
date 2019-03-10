@@ -94,7 +94,7 @@ x # solution 5
 
 ### Problem  6
 ```{r}
-sum(1:100)^2 - sum((1:100)^2) # solution 7
+sum(1:100)^2 - sum((1:100)^2) # solution 6
 ```
 
 
