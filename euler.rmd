@@ -278,7 +278,7 @@ substring(as.character(x), 1, 10) # solution 13
 ```
 
 
-### Problem  14
+### Problem 14
 ```{r}
 collatz <- function(x) {
     if(x%%2 == 0){

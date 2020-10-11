@@ -1,0 +1,253 @@
+Antti & Henri sofa session 2020-10-04
+
+### Problem  7
+```{r}
+# setup vector for prime numbers
+beg <- Sys.time()
+primes <- rep(NA, 10001)
+primes[c(1,2,3)] <- c(2,3,5)
+# index for primes
+i <- 4
+while(i < 10002){
+  # set a number to test
+  x <- primes[i-1] + 2
+  # check if x is not prime
+  while(any(x%%primes[1:(i-1)] == 0)) {
+    x <- x + 2
+  }
+  primes[i] <- x
+  i <- i + 1
+}
+primes[10001]
+end <- Sys.time()
+end-beg
+```
+
+### Problem 59
+```{r}
+library(tidyverse)
+library(stringi)
+original <- scan('p059_cipher.txt', sep=",")
+# print stats & histogram
+range(original)
+hist(original, breaks=96)
+# from ascii to character
+97 %>% as.raw() %>% rawToChar()
+
+
+pleb_crypt <- function(a,b,c, bottom=0, top=96, data=original){
+  # shift the ASCII codes to bottom of desired range
+  output <- data + (bottom - min(data))
+  test1 <<- output
+  # add x to ASCII codes
+  # key <- unlist(key, use.names = FALSE)
+  key <- c(a,b,c)
+  output <- output + key
+  test2 <<- output
+  # loop codes that are beyond the "top" value back to the "bottom"
+  while(any(output > top)){
+    for(i in 1:length(output)){
+      if(output[i] > top){
+        output[i] <- (output[i]-top) + bottom -1
+      }
+    }
+  }
+  test3 <<- output
+  (output + 32) %>% as.raw() %>% rawToChar()
+}
+
+
+original
+pleb_crypt(97,100,115); print(test3)
+pleb_crypt(97,100,115, data = test3); print(test3)
+test1; test2; test3
+min(test3)
+test3 %>% hist(breaks=96)
+length(which(test3 == 0)); which(test3 == 0)
+output
+original %>% head()
+
+hack_list <- cross_df(.l = list("a"=97:122, "b"=97:122, "c"=97:122)) %>% 
+  mutate(crypt = "")
+
+for(i in 1:nrow(hack_list)) {
+  hack_list$crypt[i] <- pleb_crypt(hack_list$a[i], hack_list$b[i], hack_list$c[i])
+}
+
+hack_list %>% 
+  filter(grepl('the', crypt)) %>% select(crypt)
+
+hack_list %>% 
+  filter(grepl('for', crypt)) %>% select(crypt)
+
+hack_list <- hack_list %>% 
+  mutate(crypt_test = pleb_crypt(a, b, c))
+
+pleb_crypt(97,97,97)
+pleb_crypt(97,97,100)
+
+
+
+hack_list <- hack_list %>% 
+  mutate(testy = rnorm(a, b))
+hack_list
+
+hack_list <- hack_list %>% 
+  mutate(test = paste(a,b,c))
+hack_list$test %>% strsplit(split = " ") %>% head()
+hack_list <- cross3(97:122, 97:122, 97:122)
+
+hack_list[[1]] %>% unlist(use.names = F)
+
+pleb_crypt(c(97,98,99)) #%>% hist(breaks=96)
+rm(keys)
+keys <- tibble(key=list(), .rows=26^3)
+keys
+keys$key[1] <- c(97,97,97)
+
+
+# possible ASCII code sums of three lower case letters
+
+output_heads <- map_chr(keys, pleb_crypt)
+output_heads
+```
+
+```{r}
+num <- 0:10
+output <- num
+bottom <- 0
+top <- 3
+num 
+while(any(output > top)){
+  for(i in 1:length(output)){
+    if(output[i] > top){
+    output[i] <- (output[i]-top) + bottom -1
+    }
+  }
+}
+output
+rep_len(0:3, 11)
+```
+
+```{r}
+library(tidyverse)
+library(stringi)
+original <- scan('p059_cipher.txt', sep=",")
+# print stats & histogram
+range(original)
+hist(original, breaks=96)
+# from ascii to character
+97 %>% as.raw() %>% rawToChar()
+
+
+xor <- function(a,b,c, data=original){
+  key <- c(a, b, c)
+  if(min(data) < 32){
+    output <- data + key
+  } else{
+    output <- data - key
+  }
+  if(max(output) <= 126){
+    return(output %>% as.raw() %>% rawToChar())
+  } else "no go"
+}
+
+
+xor(100, 110, 120)
+test3
+range(test3)
+  
+hack_list <- cross_df(.l = list("a"=97:122, "b"=97:122, "c"=97:122)) %>% 
+  mutate(crypt = "")
+
+for(i in 1:nrow(hack_list)) {
+  hack_list$crypt[i] <- xor(a=hack_list$a[i], b=hack_list$b[i], c=hack_list$c[i])
+}
+
+set1 <- original[seq(1, length(original), 3)]
+set2 <- original[seq(2, length(original), 3)]
+set3 <- original[seq(3, length(original), 3)]
+walk(list(set1, set2, set3), ~hist(.x, breaks=96))
+
+
+hack_list %>% select(crypt)
+hack_list %>% 
+  filter(grepl('the|for|apple|computer|news|internet|program|man', crypt)) %>% select(crypt)
+
+hack_list %>% select(crypt)
+
+```
+
+```{r}
+library(tidyverse)
+# range of encrypted numbers
+max(original)-min(original)
+
+# minimum possible range of unencrypted ASCII codes
+max(original)-min(original)-(122-97)
+
+dat <- tibble(original=original) %>% 
+  mutate(cipher_group = rep_len(1:3, length.out = length(original)))
+dat %>% 
+  ggplot(aes(x=original, fill = as.factor(cipher_group))) +
+  geom_histogram(bins = 96)
+dat %>% 
+  ggplot(aes(x=original)) +
+  geom_histogram(bins = 96) +
+  facet_grid(cipher_group~.)
+```
+
+After finally reading about what XOR ciphers are..
+```{r}
+xor <- function(a,b,c, data=original){
+  key <- c(a, b, c)
+  output <- bitwXor(data, key)
+  output %>% as.raw() %>% rawToChar()
+}
+
+hack_list <- cross_df(.l = list("a"=97:122, "b"=97:122, "c"=97:122)) %>% 
+  mutate(crypt = "")
+for(i in 1:nrow(hack_list)) {
+  hack_list$crypt[i] <- xor(a=hack_list$a[i], b=hack_list$b[i], c=hack_list$c[i])
+}
+
+# look for common words among the decryption attempts
+hack_list %>% 
+  filter(grepl('hello|computer|number|program|apple|congratulation', crypt)) %>% 
+  pull(crypt)
+
+which(grepl('hello|computer|number|program|apple|congratulation', hack_list$crypt))
+hack_list[10743,]
+c(101,120,112) %>% as.raw() %>% rawToChar()
+
+# Answer
+bitwXor(original, c(101,120,112)) %>% sum()
+```
+
+### Problem 44
+```{r}
+# create a vector of pentagon numbers
+x <- vector(mode = "integer", length = 10000)
+for(i in seq_along(x)){
+  x[i] <- i*(3*i-1)/2
+}
+
+# identify indexes of numbers that sum to a pentagon number with previous number
+sum_pairs <- tibble(a = NA , b = NA, .rows = 1000)
+k <- 1
+for(i in 2:2000){
+  for(j in 3:9000){
+    if((x[i] + x[j]) %in% x){
+      if((x[j] - x[i]) %in% x){
+        sum_pairs$a[k] <- x[i]
+        sum_pairs$b[k] <- x[j]
+        k <<- k + 1
+        }
+    }
+  }
+}
+
+# Answer
+sum_pairs %>% mutate(d = b-a) %>% pull(d) %>% head(1)
+```
+
